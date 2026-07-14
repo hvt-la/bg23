@@ -258,28 +258,55 @@
                                 <input type="text" id="inp-quote-date" class="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0a3d62]/20 focus:border-[#0a3d62] outline-none transition text-sm" placeholder="DD/MM/YYYY">
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Thuế suất VAT (%)</label>
-                            <select id="inp-vat-rate" class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0a3d62]/20 focus:border-[#0a3d62] outline-none transition text-sm bg-white">
-                                <option value="0">Không có thuế (0%)</option>
-                                <option value="8">Thuế VAT 8%</option>
-                                <option value="10">Thuế VAT 10%</option>
-                            </select>
-                        </div>
                         <!-- Cập nhật tải Logo tùy chỉnh -->
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tải logo của bạn lên (nếu có)</label>
-                            <div class="flex items-center gap-3">
-                                <label class="flex-1 flex flex-col items-center justify-center py-2 px-3 border border-dashed border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                                    <span class="text-xs text-slate-500 flex items-center gap-1" id="logo-status">
-                                        <i class="fas fa-cloud-upload-alt text-primary"></i> Thay đổi Logo...
-                                    </span>
-                                    <input type="file" id="inp-logo" class="hidden" accept="image/*" onchange="handleLogoUpload(this)">
-                                </label>
-                                <button type="button" onclick="resetLogo()" class="px-2.5 py-2 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-lg transition text-xs font-bold" title="Xóa logo, khôi phục mặc định">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
+                        <table class="w-full text-left border-collapse" id="input-items-table">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-xs font-black text-slate-400 uppercase">
+                                    <th class="pb-3 w-[35%]">Nội dung công việc / Vật tư</th>
+                                    <th class="pb-3 w-[10%] px-2">ĐVT</th>
+                                    <th class="pb-3 w-[10%] px-2">Số lượng</th>
+                                    <th class="pb-3 w-[15%] px-2">Đơn giá (VNĐ)</th>
+                                    <th class="pb-3 w-[10%] px-2">VAT (%)</th>
+                                    <th class="pb-3 w-[15%] px-2">Ghi chú</th>
+                                    <th class="pb-3 w-[5%] text-center"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="items-body" class="divide-y divide-slate-100">
+                                <!-- Dòng nhập liệu đầu tiên -->
+                                <tr class="item-row group">
+                                    <td class="py-3 pr-2">
+                                        <input type="text" class="i-desc w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" placeholder="VD: Cung cấp & thi công lắp đặt hệ thống điện">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="text" class="i-unit w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-center" placeholder="Hạng mục">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="number" class="i-qty w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-center" placeholder="0" min="0" step="any" oninput="calculateTotalDraft()">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="number" class="i-price w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-right" placeholder="0" min="0" step="1000" oninput="calculateTotalDraft()">
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <select class="i-vat w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" onchange="calculateTotalDraft()">
+                                            <option value="0">0%</option>
+                                            <option value="8">8%</option>
+                                            <option value="10">10%</option>
+                                        </select>
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="text" class="i-note w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" placeholder="Ghi chú dòng này...">
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <button class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition" onclick="removeRow(this)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                         </div>
                     </div>
                 </div>
@@ -386,12 +413,13 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
                     <thead>
                         <tr>
                             <th style="width: 5%;">STT</th>
-                            <th style="width: 32%;">NỘI DUNG / HẠNG MỤC CÔNG VIỆC</th>
+                            <th style="width: 30%;">NỘI DUNG / HẠNG MỤC CÔNG VIỆC</th>
                             <th style="width: 8%;">ĐVT</th>
-                            <th style="width: 8%;">SL</th>
-                            <th style="width: 15%;">ĐƠN GIÁ</th>
+                            <th style="width: 7%;">SL</th>
+                            <th style="width: 12%;">ĐƠN GIÁ</th>
+                            <th style="width: 8%;">VAT</th>
                             <th style="width: 15%;">THÀNH TIỀN</th>
-                            <th style="width: 17%;">GHI CHÚ</th>
+                            <th style="width: 15%;">GHI CHÚ</th>
                         </tr>
                     </thead>
                     <tbody id="out-items-body">
@@ -507,6 +535,13 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
                     <input type="number" class="i-price w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-right" placeholder="0" min="0" step="1000" oninput="calculateTotalDraft()">
                 </td>
                 <td class="py-3 px-1">
+                    <select class="i-vat w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" onchange="calculateTotalDraft()">
+                        <option value="0">0%</option>
+                        <option value="8">8%</option>
+                        <option value="10">10%</option>
+                    </select>
+                </td>
+                <td class="py-3 px-1">
                     <input type="text" class="i-note w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" placeholder="Ghi chú riêng...">
                 </td>
                 <td class="py-3 text-center">
@@ -538,7 +573,9 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
             rows.forEach(row => {
                 const qty = parseFloat(row.querySelector('.i-qty').value) || 0;
                 const price = parseFloat(row.querySelector('.i-price').value) || 0;
-                subtotal += (qty * price);
+                const vat = parseFloat(row.querySelector('.i-vat').value) || 0;
+                const lineTotal = (qty * price) * (1 + vat / 100);
+                subtotal += lineTotal;
             });
             document.getElementById('temp-subtotal').innerText = formatMoney(subtotal) + " VNĐ";
         }
@@ -600,7 +637,6 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
                     projectName: document.getElementById('inp-project-name').value,
                     quoteNo: document.getElementById('inp-quote-no').value,
                     quoteDate: document.getElementById('inp-quote-date').value,
-                    vatRate: document.getElementById('inp-vat-rate').value,
                     warranty: document.getElementById('inp-warranty').value,
                     notes: document.getElementById('inp-notes').value,
                     logo: uploadedLogoData
@@ -625,7 +661,6 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
                     document.getElementById('inp-project-name').value = draft.projectName || '';
                     document.getElementById('inp-quote-no').value = draft.quoteNo || '';
                     if (draft.quoteDate) document.getElementById('inp-quote-date').value = draft.quoteDate;
-                    document.getElementById('inp-vat-rate').value = draft.vatRate || '0';
                     document.getElementById('inp-warranty').value = draft.warranty || 'Bảo hành kỹ thuật lắp đặt từ 12 tháng kể từ ngày nghiệm thu bàn giao.';
                     document.getElementById('inp-notes').value = draft.notes || '';
                     
@@ -689,6 +724,8 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
             outTbody.innerHTML = ''; // Dọn dẹp bảng in cũ trước khi vẽ lại để tránh lỗi lặp dòng
             
             let subTotal = 0;
+            let totalVat = 0;
+            let finalTotal = 0;
             let stt = 1;
 
             rows.forEach(row => {
@@ -696,11 +733,17 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
                 const unit = row.querySelector('.i-unit').value.trim();
                 const qty = parseFloat(row.querySelector('.i-qty').value) || 0;
                 const price = parseFloat(row.querySelector('.i-price').value) || 0;
+                const vat = parseFloat(row.querySelector('.i-vat').value) || 0;
                 const note = row.querySelector('.i-note').value.trim();
                 
                 if (desc !== "") {
-                    const lineTotal = qty * price;
-                    subTotal += lineTotal;
+                    const lineBase = qty * price;
+                    const lineVat = lineBase * (vat / 100);
+                    const lineTotal = lineBase + lineVat;
+                    
+                    subTotal += lineBase;
+                    totalVat += lineVat;
+                    finalTotal += lineTotal;
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -709,6 +752,7 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
                         <td class="text-center text-slate-600" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${unit || '-'}</td>
                         <td class="text-center font-semibold text-slate-800" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${qty}</td>
                         <td class="text-right text-slate-700" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${price > 0 ? formatMoney(price) : '-'}</td>
+                        <td class="text-center text-slate-700" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${vat}%</td>
                         <td class="text-right font-bold text-slate-900" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${lineTotal > 0 ? formatMoney(lineTotal) : '-'}</td>
                         <td class="text-left text-xs text-slate-500 font-normal italic" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${note || ''}</td>
                     `;
@@ -720,45 +764,28 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
             if (stt === 1) {
                 outTbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="text-center py-6 text-slate-400 font-medium" style="border: 1px solid #cbd5e1;">Chưa có thông tin vật tư thi công. Hãy điền ít nhất một dòng phía trên.</td>
+                        <td colspan="8" class="text-center py-6 text-slate-400 font-medium" style="border: 1px solid #cbd5e1;">Chưa có thông tin vật tư thi công. Hãy điền ít nhất một dòng phía trên.</td>
                     </tr>
                 `;
             }
 
             // 3. Tính toán Thuế VAT & Thay đổi ghi chú dòng tổng cộng linh hoạt
-            const vatRate = parseInt(document.getElementById('inp-vat-rate').value);
-            let vatAmount = 0;
-            let finalTotal = subTotal;
-            let vatTextNote = "chưa bao gồm thuế VAT (0%)";
-            let totalNoteLabel = "Tổng thanh toán (chưa bao gồm VAT)";
-
-            if (vatRate > 0) {
-                vatAmount = subTotal * (vatRate / 100);
-                finalTotal = subTotal + vatAmount;
-                vatTextNote = `đã bao gồm thuế VAT (${vatRate}%)`;
-                totalNoteLabel = "Tổng thanh toán sau thuế";
-                
-                // Vẽ các dòng cộng tiền hàng & thuế khi có VAT
-                outTbody.innerHTML += `
-                    <tr class="font-bold bg-slate-50/70">
-                        <td colspan="5" class="text-right text-xs uppercase text-slate-500 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">Tổng giá trị tiền hàng:</td>
-                        <td class="text-right font-bold text-slate-800 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${formatMoney(subTotal)}</td>
-                        <td style="border: 1px solid #cbd5e1;"></td>
-                    </tr>
-                    <tr class="font-bold bg-slate-50/70">
-                        <td colspan="5" class="text-right text-xs uppercase text-slate-500 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">Thuế GTGT (${vatRate}%):</td>
-                        <td class="text-right font-bold text-slate-800 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${formatMoney(vatAmount)}</td>
-                        <td style="border: 1px solid #cbd5e1;"></td>
-                    </tr>
-                `;
-            }
-
-            // Dòng tổng kết quyết định cuối cùng
+            
             outTbody.innerHTML += `
+                <tr class="font-bold bg-slate-50/70">
+                    <td colspan="6" class="text-right text-xs uppercase text-slate-500 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">Tổng giá trị tiền hàng:</td>
+                    <td class="text-right font-bold text-slate-800 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${formatMoney(subTotal)}</td>
+                    <td style="border: 1px solid #cbd5e1;"></td>
+                </tr>
+                <tr class="font-bold bg-slate-50/70">
+                    <td colspan="6" class="text-right text-xs uppercase text-slate-500 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">Tổng tiền thuế VAT:</td>
+                    <td class="text-right font-bold text-slate-800 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${formatMoney(totalVat)}</td>
+                    <td style="border: 1px solid #cbd5e1;"></td>
+                </tr>
                 <tr class="font-black bg-blue-50/20 text-rose-600">
-                    <td colspan="5" class="text-right text-sm uppercase text-slate-800 py-3 tracking-wider" style="border: 1px solid #cbd5e1; padding: 12px 6px;">TỔNG CỘNG THÀNH TIỀN THANH TOÁN:</td>
+                    <td colspan="6" class="text-right text-sm uppercase text-slate-800 py-3 tracking-wider" style="border: 1px solid #cbd5e1; padding: 12px 6px;">TỔNG CỘNG THÀNH TIỀN THANH TOÁN:</td>
                     <td class="text-right font-black text-base py-3" style="border: 1px solid #cbd5e1; padding: 12px 6px;">${formatMoney(finalTotal)} VNĐ</td>
-                    <td class="text-left text-xs font-semibold text-[#0a3d62] italic" style="border: 1px solid #cbd5e1; padding: 12px 6px;">${totalNoteLabel}</td>
+                    <td class="text-left text-xs font-semibold text-[#0a3d62] italic" style="border: 1px solid #cbd5e1; padding: 12px 6px;">Tổng thanh toán sau thuế</td>
                 </tr>
             `;
 
@@ -769,7 +796,7 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
             
             // Vẽ các mục mặc định về Thuế & Bảo hành
             outNotesList.innerHTML = `
-                <li>Đơn giá trên <span class="font-semibold text-slate-900">${vatTextNote}</span>.</li>
+                <li>Đơn giá và thuế VAT được áp dụng chi tiết theo từng hạng mục công việc.</li>
                 <li class="font-medium text-slate-900">${warrantyText ? 'Bảo hành công trình: ' + warrantyText : 'Bảo hành theo thỏa thuận tiêu chuẩn.'}</li>
             `;
 
