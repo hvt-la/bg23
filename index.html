@@ -139,7 +139,7 @@
             
             <!-- Cột Trái & Giữa: Khách hàng & Hạng mục vật tư -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- Thẻ nhập thông tin khách hàng (Để trống mặc định) -->
+                <!-- Thẻ nhập thông tin khách hàng (Để trống mặc định theo yêu cầu) -->
                 <div class="input-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                     <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
                         <span class="w-2 h-6 bg-[#0a3d62] rounded"></span>
@@ -170,7 +170,7 @@
                     </div>
                 </div>
 
-                <!-- Thẻ nhập danh sách các hạng mục thi công / vật tư -->
+                <!-- Thẻ nhập danh sách các hạng mục thi công / vật tư (Đã gộp cột thuế VAT chuẩn xác) -->
                 <div class="input-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                     <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
                         <div class="flex items-center gap-2">
@@ -186,11 +186,12 @@
                         <table class="w-full text-left border-collapse" id="input-items-table">
                             <thead>
                                 <tr class="border-b border-slate-100 text-xs font-black text-slate-400 uppercase">
-                                    <th class="pb-3 w-[40%]">Nội dung công việc / Vật tư</th>
+                                    <th class="pb-3 w-[35%]">Nội dung công việc / Vật tư</th>
                                     <th class="pb-3 w-[10%] px-2">ĐVT</th>
-                                    <th class="pb-3 w-[12%] px-2">Số lượng</th>
-                                    <th class="pb-3 w-[18%] px-2">Đơn giá (VNĐ)</th>
-                                    <th class="pb-3 w-[15%] px-2">Ghi chú</th>
+                                    <th class="pb-3 w-[10%] px-2">Số lượng</th>
+                                    <th class="pb-3 w-[15%] px-2">Đơn giá (VNĐ)</th>
+                                    <th class="pb-3 w-[12%] px-2">VAT (%)</th>
+                                    <th class="pb-3 w-[13%] px-2">Ghi chú</th>
                                     <th class="pb-3 w-[5%] text-center"></th>
                                 </tr>
                             </thead>
@@ -210,7 +211,14 @@
                                         <input type="number" class="i-price w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-right" placeholder="0" min="0" step="1000" oninput="calculateTotalDraft()">
                                     </td>
                                     <td class="py-3 px-1">
-                                        <input type="text" class="i-note w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" placeholder="Ghi chú dòng này...">
+                                        <select class="i-vat w-full px-2 py-2.5 border border-slate-200 rounded-lg text-xs focus:border-primary outline-none bg-white font-bold" onchange="calculateTotalDraft()">
+                                            <option value="0">0%</option>
+                                            <option value="8">8%</option>
+                                            <option value="10">10%</option>
+                                        </select>
+                                    </td>
+                                    <td class="py-3 px-1">
+                                        <input type="text" class="i-note w-full px-2 py-2 border border-slate-200 rounded-lg text-xs focus:border-primary outline-none" placeholder="Ghi chú...">
                                     </td>
                                     <td class="py-3 text-center">
                                         <button class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition" onclick="removeRow(this)">
@@ -227,7 +235,7 @@
                             <i class="fas fa-plus-circle"></i> Thêm một dòng mới
                         </button>
                         <div class="text-right">
-                            <span class="text-xs font-semibold text-slate-400 uppercase block">Tạm tính sơ bộ:</span>
+                            <span class="text-xs font-semibold text-slate-400 uppercase block">Tạm tính sơ bộ (sau thuế):</span>
                             <span id="temp-subtotal" class="text-lg font-black text-[#0a3d62]">0 VNĐ</span>
                         </div>
                     </div>
@@ -258,55 +266,20 @@
                                 <input type="text" id="inp-quote-date" class="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#0a3d62]/20 focus:border-[#0a3d62] outline-none transition text-sm" placeholder="DD/MM/YYYY">
                             </div>
                         </div>
-                        <!-- Cập nhật tải Logo tùy chỉnh -->
+                        <!-- Cập nhật tải Logo tùy chỉnh (Sửa hoàn toàn HTML bị lỗi đè trước đó) -->
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tải logo của bạn lên (nếu có)</label>
-                        <table class="w-full text-left border-collapse" id="input-items-table">
-                            <thead>
-                                <tr class="border-b border-slate-100 text-xs font-black text-slate-400 uppercase">
-                                    <th class="pb-3 w-[35%]">Nội dung công việc / Vật tư</th>
-                                    <th class="pb-3 w-[10%] px-2">ĐVT</th>
-                                    <th class="pb-3 w-[10%] px-2">Số lượng</th>
-                                    <th class="pb-3 w-[15%] px-2">Đơn giá (VNĐ)</th>
-                                    <th class="pb-3 w-[10%] px-2">VAT (%)</th>
-                                    <th class="pb-3 w-[15%] px-2">Ghi chú</th>
-                                    <th class="pb-3 w-[5%] text-center"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="items-body" class="divide-y divide-slate-100">
-                                <!-- Dòng nhập liệu đầu tiên -->
-                                <tr class="item-row group">
-                                    <td class="py-3 pr-2">
-                                        <input type="text" class="i-desc w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" placeholder="VD: Cung cấp & thi công lắp đặt hệ thống điện">
-                                    </td>
-                                    <td class="py-3 px-1">
-                                        <input type="text" class="i-unit w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-center" placeholder="Hạng mục">
-                                    </td>
-                                    <td class="py-3 px-1">
-                                        <input type="number" class="i-qty w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-center" placeholder="0" min="0" step="any" oninput="calculateTotalDraft()">
-                                    </td>
-                                    <td class="py-3 px-1">
-                                        <input type="number" class="i-price w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-right" placeholder="0" min="0" step="1000" oninput="calculateTotalDraft()">
-                                    </td>
-                                    <td class="py-3 px-1">
-                                        <select class="i-vat w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" onchange="calculateTotalDraft()">
-                                            <option value="0">0%</option>
-                                            <option value="8">8%</option>
-                                            <option value="10">10%</option>
-                                        </select>
-                                    </td>
-                                    <td class="py-3 px-1">
-                                        <input type="text" class="i-note w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" placeholder="Ghi chú dòng này...">
-                                    </td>
-                                    <td class="py-3 text-center">
-                                        <button class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition" onclick="removeRow(this)">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                            <div class="flex items-center gap-3">
+                                <label class="flex-1 flex flex-col items-center justify-center py-2 px-3 border border-dashed border-slate-300 rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                                    <span class="text-xs text-slate-500 flex items-center gap-1" id="logo-status">
+                                        <i class="fas fa-cloud-upload-alt text-primary"></i> Chọn ảnh logo...
+                                    </span>
+                                    <input type="file" id="inp-logo" class="hidden" accept="image/*" onchange="handleLogoUpload(this)">
+                                </label>
+                                <button type="button" onclick="resetLogo()" class="px-2.5 py-2 text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-lg transition text-xs font-bold" title="Khôi phục logo mặc định">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -361,7 +334,7 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
             <div class="header flex items-center justify-between border-b-2 border-[#0a3d62] pb-4 mb-4">
                 <div class="logo-section flex items-center">
                     <div id="print-logo-container" class="mr-4 flex items-center">
-                        <!-- Sử dụng logo sạch đã lượt bỏ text "hồ sơ báo giá" -->
+                        <!-- Sử dụng logo sạch đã lược bỏ text "hồ sơ báo giá" -->
                         <img id="print-logo-img" src="watermarked_img_3192661961912549506.png" alt="Logo Nguyên Thanh Đạt" class="h-20 w-auto object-contain" onerror="handleLogoError()">
                         
                         <!-- Logo dạng chữ dự phòng nếu ảnh bị lỗi -->
@@ -488,7 +461,7 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
             if (!container) return;
             const toast = document.createElement('div');
             
-            const bgClass = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
+            const bgClass = type === 'success' ? 'bg-[#0a3d62]' : 'bg-rose-600';
             const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
             
             toast.className = `flex items-center gap-3 px-4 py-3 text-white text-sm font-bold rounded-xl shadow-xl transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto ${bgClass}`;
@@ -526,7 +499,7 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
                     <input type="text" class="i-desc w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" placeholder="Nội dung hạng mục...">
                 </td>
                 <td class="py-3 px-1">
-                    <input type="text" class="i-unit w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-center" placeholder="Bộ">
+                    <input type="text" class="i-unit w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-center" placeholder="Hạng mục">
                 </td>
                 <td class="py-3 px-1">
                     <input type="number" class="i-qty w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-center" placeholder="0" min="0" step="any" oninput="calculateTotalDraft()">
@@ -535,14 +508,14 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
                     <input type="number" class="i-price w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none text-right" placeholder="0" min="0" step="1000" oninput="calculateTotalDraft()">
                 </td>
                 <td class="py-3 px-1">
-                    <select class="i-vat w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" onchange="calculateTotalDraft()">
+                    <select class="i-vat w-full px-2 py-2.5 border border-slate-200 rounded-lg text-xs focus:border-primary outline-none bg-white font-bold" onchange="calculateTotalDraft()">
                         <option value="0">0%</option>
                         <option value="8">8%</option>
                         <option value="10">10%</option>
                     </select>
                 </td>
                 <td class="py-3 px-1">
-                    <input type="text" class="i-note w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" placeholder="Ghi chú riêng...">
+                    <input type="text" class="i-note w-full px-2 py-2 border border-slate-200 rounded-lg text-sm focus:border-primary outline-none" placeholder="Ghi chú dòng này...">
                 </td>
                 <td class="py-3 text-center">
                     <button class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition" onclick="removeRow(this)">
@@ -557,7 +530,7 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
         // Xóa dòng vật tư khỏi bảng
         function removeRow(btn) {
             const row = btn.parentNode.parentNode;
-            if (document.querySelectorAll('.item-row').length > 1) {
+            if (document.querySelectorAll('#items-body .item-row').length > 1) {
                 row.remove();
                 calculateTotalDraft();
                 showToast("Đã xóa dòng vật tư", "error");
@@ -568,7 +541,7 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
 
         // Tính toán sơ bộ tổng số tiền hiển thị trên form nháp
         function calculateTotalDraft() {
-            const rows = document.querySelectorAll('.item-row');
+            const rows = document.querySelectorAll('#items-body .item-row');
             let subtotal = 0;
             rows.forEach(row => {
                 const qty = parseFloat(row.querySelector('.i-qty').value) || 0;
@@ -602,7 +575,7 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
         // Đặt lại logo về mặc định
         function resetLogo() {
             uploadedLogoData = null;
-            document.getElementById('logo-status').innerHTML = `<i class="fas fa-cloud-upload-alt text-primary"></i> Thay đổi Logo...`;
+            document.getElementById('logo-status').innerHTML = `<i class="fas fa-cloud-upload-alt text-[#0a3d62]"></i> Thay đổi Logo...`;
             document.getElementById('inp-logo').value = '';
             
             const printImg = document.getElementById('print-logo-img');
@@ -719,9 +692,9 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
             document.getElementById('out-email-row').style.display = email ? 'block' : 'none';
 
             // 2. Chuyển đổi và kết xuất bảng vật tư
-            const rows = document.querySelectorAll('.item-row');
+            const rows = document.querySelectorAll('#items-body .item-row');
             const outTbody = document.getElementById('out-items-body');
-            outTbody.innerHTML = ''; // Dọn dẹp bảng in cũ trước khi vẽ lại để tránh lỗi lặp dòng
+            outTbody.innerHTML = ''; // Dọn dẹp bảng in cũ trước khi vẽ lại
             
             let subTotal = 0;
             let totalVat = 0;
@@ -769,25 +742,34 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
                 `;
             }
 
-            // 3. Tính toán Thuế VAT & Thay đổi ghi chú dòng tổng cộng linh hoạt
-            
-            outTbody.innerHTML += `
-                <tr class="font-bold bg-slate-50/70">
-                    <td colspan="6" class="text-right text-xs uppercase text-slate-500 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">Tổng giá trị tiền hàng:</td>
-                    <td class="text-right font-bold text-slate-800 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${formatMoney(subTotal)}</td>
-                    <td style="border: 1px solid #cbd5e1;"></td>
-                </tr>
-                <tr class="font-bold bg-slate-50/70">
-                    <td colspan="6" class="text-right text-xs uppercase text-slate-500 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">Tổng tiền thuế VAT:</td>
-                    <td class="text-right font-bold text-slate-800 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${formatMoney(totalVat)}</td>
-                    <td style="border: 1px solid #cbd5e1;"></td>
-                </tr>
-                <tr class="font-black bg-blue-50/20 text-rose-600">
-                    <td colspan="6" class="text-right text-sm uppercase text-slate-800 py-3 tracking-wider" style="border: 1px solid #cbd5e1; padding: 12px 6px;">TỔNG CỘNG THÀNH TIỀN THANH TOÁN:</td>
-                    <td class="text-right font-black text-base py-3" style="border: 1px solid #cbd5e1; padding: 12px 6px;">${formatMoney(finalTotal)} VNĐ</td>
-                    <td class="text-left text-xs font-semibold text-[#0a3d62] italic" style="border: 1px solid #cbd5e1; padding: 12px 6px;">Tổng thanh toán sau thuế</td>
-                </tr>
-            `;
+            // 3. Tính toán và Hiển thị các dòng Tổng tiền linh hoạt theo trạng thái thuế VAT
+            if (totalVat > 0) {
+                outTbody.innerHTML += `
+                    <tr class="font-bold bg-slate-50/70">
+                        <td colspan="6" class="text-right text-xs uppercase text-slate-500 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">Tổng tiền hàng (Chưa VAT):</td>
+                        <td class="text-right font-bold text-slate-800 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${formatMoney(subTotal)}</td>
+                        <td style="border: 1px solid #cbd5e1;"></td>
+                    </tr>
+                    <tr class="font-bold bg-slate-50/70">
+                        <td colspan="6" class="text-right text-xs uppercase text-slate-500 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">Tổng thuế VAT:</td>
+                        <td class="text-right font-bold text-slate-800 py-2" style="border: 1px solid #cbd5e1; padding: 8px 6px;">${formatMoney(totalVat)}</td>
+                        <td style="border: 1px solid #cbd5e1;"></td>
+                    </tr>
+                    <tr class="font-black bg-blue-50/20 text-rose-600">
+                        <td colspan="6" class="text-right text-sm uppercase text-slate-800 py-3 tracking-wider" style="border: 1px solid #cbd5e1; padding: 12px 6px;">TỔNG CỘNG THÀNH TIỀN THANH TOÁN:</td>
+                        <td class="text-right font-black text-base py-3" style="border: 1px solid #cbd5e1; padding: 12px 6px;">${formatMoney(finalTotal)} VNĐ</td>
+                        <td class="text-left text-xs font-semibold text-[#0a3d62] italic" style="border: 1px solid #cbd5e1; padding: 12px 6px;">Đã bao gồm VAT</td>
+                    </tr>
+                `;
+            } else {
+                outTbody.innerHTML += `
+                    <tr class="font-black bg-blue-50/20 text-rose-600">
+                        <td colspan="6" class="text-right text-sm uppercase text-slate-800 py-3 tracking-wider" style="border: 1px solid #cbd5e1; padding: 12px 6px;">TỔNG CỘNG THÀNH TIỀN THANH TOÁN:</td>
+                        <td class="text-right font-black text-base py-3" style="border: 1px solid #cbd5e1; padding: 12px 6px;">${formatMoney(finalTotal)} VNĐ</td>
+                        <td class="text-left text-xs font-semibold text-[#0a3d62] italic" style="border: 1px solid #cbd5e1; padding: 12px 6px;">Chưa bao gồm VAT</td>
+                    </tr>
+                `;
+            }
 
             // 4. Đồng bộ hóa Điều khoản bảo hành & Ghi chú bổ sung
             const warrantyText = document.getElementById('inp-warranty').value.trim();
