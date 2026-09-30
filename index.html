@@ -514,52 +514,74 @@ Khách hàng tạm ứng 50% ngay sau khi ký duyệt xác nhận đơn hàng, t
             return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        function docSoTiengViet(so) {
-            if (so === 0) return "Không đồng";
-            const chuSo = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
-            const tien = ["", "nghìn", "triệu", "tỷ", "nghìn tỷ", "triệu tỷ"];
+       function docSoTiengViet(so) {
+    if (!so || so === 0) return "Không đồng";
+    so = Math.round(Math.abs(so));
+    
+    const chuSo = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
+    const tien = ["", "nghìn", "triệu", "tỷ", "nghìn tỷ", "triệu tỷ"];
 
-            function docKhongThanhBo3So(baso) {
-                let tram = Math.floor(baso / 100);
-                let chuc = Math.floor((baso % 100) / 10);
-                let donvi = baso % 10;
-                let kq = "";
-                if (tram > 0 || chuc > 0 || donvi > 0) {
-                    kq += chuSo[tram] + " trăm ";
-                    if (chuc === 0 && donvi > 0) kq += "lẻ ";
-                    if (chuc === 1) kq += "mười ";
-                    if (chuc > 1) kq += chuSo[chuc] + " mươi ";
-                    if (donvi === 1) {
-                        if (chuc > 1) kq += "mốt ";
-                        else kq += "một ";
-                    } else if (donvi === 5) {
-                        if (chuc > 0) kq += "lăm ";
-                        else kq += "năm ";
-                    } else if (donvi > 0) {
-                        kq += chuSo[donvi] + " ";
-                    }
-                }
-                return kq;
-            }
+    function docBo3So(baso, isFirstGroup) {
+        let tram = Math.floor(baso / 100);
+        let chuc = Math.floor((baso % 100) / 10);
+        let donvi = baso % 10;
+        let res = "";
 
-            let str = Math.round(so).toString();
-            let arr = [];
-            while (str.length > 0) {
-                arr.push(parseInt(str.slice(-3)));
-                str = str.slice(0, -3);
-            }
+        if (tram === 0 && chuc === 0 && donvi === 0) return "";
 
-            let res = "";
-            for (let j = arr.length - 1; j >= 0; j--) {
-                if (arr[j] > 0) {
-                    res += docKhongThanhBo3So(arr[j]) + tien[j] + " ";
-                }
-            }
-            res = res.trim();
-            if (!res) return "Không đồng";
-            return res.charAt(0).toUpperCase() + res.slice(1) + " đồng chẵn./.";
+        // Chỉ đọc "không trăm" nếu không phải nhóm số cao nhất
+        if (tram > 0 || !isFirstGroup) {
+            res += chuSo[tram] + " trăm ";
         }
 
+        // Xử lý hàng chục & hàng đơn vị
+        if (chuc > 1) {
+            res += chuSo[chuc] + " mươi ";
+            if (donvi === 1) res += "mốt ";
+            else if (donvi === 5) res += "lăm ";
+            else if (donvi > 0) res += chuSo[donvi] + " ";
+        } else if (chuc === 1) {
+            res += "mười ";
+            if (donvi === 5) res += "lăm ";
+            else if (donvi > 0) res += chuSo[donvi] + " ";
+        } else {
+            if (donvi > 0) {
+                if (tram > 0 || !isFirstGroup) res += "lẻ ";
+                res += chuSo[donvi] + " ";
+            }
+        }
+        return res;
+    }
+
+    let str = so.toString();
+    let arr = [];
+    while (str.length > 0) {
+        arr.push(parseInt(str.slice(-3)));
+        str = str.slice(0, -3);
+    }
+
+    let totalGroups = arr.length;
+    let resultWords = [];
+
+    for (let i = totalGroups - 1; i >= 0; i--) {
+        let val = arr[i];
+        if (val > 0) {
+            let isFirst = (i === totalGroups - 1);
+            let textBlock = docBo3So(val, isFirst);
+            if (textBlock) {
+                resultWords.push(textBlock.trim());
+                if (tien[i]) resultWords.push(tien[i]);
+            }
+        }
+    }
+
+    // Tự động xóa khoảng trắng dư thừa
+    let fullText = resultWords.join(" ").replace(/\s+/g, " ").trim();
+    if (!fullText) return "Không đồng";
+
+    // Chuẩn hóa viết hoa chữ đầu & kết thúc gọn gàng
+    return fullText.charAt(0).toUpperCase() + fullText.slice(1) + " đồng.";
+}
         function addRow() {
             const tbody = document.getElementById('items-body');
             const tr = document.createElement('tr');
